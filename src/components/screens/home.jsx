@@ -1,5 +1,5 @@
 "use client";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Steps from "../steps";
 import Image from "next/image";
 import Duration from "../../../public/assets/clock.png";
@@ -8,6 +8,7 @@ import Interval from "../../../public/assets/interval.png";
 import Designer from "../../../public/assets/designer.png";
 import Calendar from "../calendar";
 import Globe from "../../../public/assets/globe.png";
+import Trash from "../../../public/assets/trash.png";
 function Home() {
   const durationContent = [
     {
@@ -43,11 +44,49 @@ function Home() {
       time: "45 mins",
     },
   ];
+  const availableTimes = [
+    {
+      time: "11:00 AM",
+    },
+    {
+      time: "12:00 PM",
+    },
+    {
+      time: "01:00 PM",
+    },
+  ];
   const [duration, setDuration] = useState("60 mins");
   const [toggleDuration, setToggleDuration] = useState(false);
   const [interval, setInterval] = useState("10 mins");
   const [toggleInterval, setToggleInterval] = useState(false);
   const [date, setDate] = useState();
+  const [timeSelected, setTimeSelected] = useState();
+  const [toggleTimeSelected, setToggleTimeSelected] = useState(false);
+  const [slots, setSlots] = useState([]);
+  const [counter, setCounter] = useState(1);
+
+  const handleSlotMaking = (time) => {
+    if (time === undefined) {
+      return;
+    }
+
+    // Check if the slot already exists before adding
+    const slotExists = slots.some((slot) => slot.time === time);
+
+    if (slotExists) {
+      alert("Slot already exists");
+      return; // Stop further execution if the slot already exists
+    }
+
+    // Add the new slot and increment the counter
+    setSlots((prevSlots) => [...prevSlots, {time, slotNo: counter}]);
+    setCounter((prevCounter) => prevCounter + 1);
+  };
+
+  // Optional: useEffect to track changes to the slots state
+  useEffect(() => {
+    console.log("Updated slots:", slots);
+  }, [slots]);
   return (
     <div className=" bg-[#eaf9ff] w-full h-full">
       {/* steps */}
@@ -196,8 +235,80 @@ function Home() {
             </div>
             {/* times */}
             <div className=" basis-1/3 h-full ">
+              {/* date */}
               <div className=" font-semibold  text-[18px]">
                 {date?.toDateString().slice(3)}
+              </div>
+              <div className=" flex flex-col gap-3 my-5">
+                {availableTimes.map((e, index) => {
+                  if (slots.length > 0) {
+                    if (slots.some((slot) => slot.time === e.time)) {
+                      return (
+                        <div
+                          key={index}
+                          className=" px-4 py-2 border-2 border-[#01B0F1] w-auto md:max-w-[100%] rounded-md  "
+                        >
+                          <div className=" flex justify-between">
+                            <div>
+                              Slot{" "}
+                              {
+                                slots.find((slot) => slot.time === e.time)
+                                  .slotNo
+                              }
+                            </div>
+                            <div
+                              onClick={() => {
+                                setCounter((prevCounter) => prevCounter - 1);
+                                setSlots((prevSlots) =>
+                                  prevSlots.filter(
+                                    (slot) => slot.time !== e.time
+                                  )
+                                );
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Image
+                                src={Trash}
+                                alt="trash"
+                                width={10}
+                                height={10}
+                              />
+                            </div>
+                          </div>
+                          <div className=" text-gray-500 text-xs">
+                            Time :{" "}
+                            {slots.find((slot) => slot.time === e.time).time}
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            handleSlotMaking(e.time);
+                            setTimeSelected(e.time);
+                          }}
+                          className=" px-4 py-2 border-2 border-[#01B0F1] w-auto md:max-w-[100%] rounded-md cursor-pointer text-center text-[#01B0F1] "
+                        >
+                          {e.time}
+                        </div>
+                      );
+                    }
+                  } else {
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          handleSlotMaking(e.time);
+                        }}
+                        className=" px-4 py-2 border-2 border-[#01B0F1] w-auto md:max-w-[100%] rounded-md cursor-pointer text-center text-[#01B0F1] "
+                      >
+                        {e.time}
+                      </div>
+                    );
+                  }
+                })}
               </div>
             </div>
           </div>
