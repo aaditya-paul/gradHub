@@ -177,11 +177,11 @@ function Calendar({setDate}) {
 
       <div className="calendar-days-container">{generateDays()}</div>
 
-      {startDate && endDate && (
+      {/* {startDate && endDate && (
         <div className="selected-range">
           Selected Range: {startDate.toDateString()} - {endDate.toDateString()}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
