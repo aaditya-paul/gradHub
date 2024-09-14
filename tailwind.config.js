@@ -11,6 +11,12 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        geistSans: "var(--font-geist-sans)",
+        geistMono: "var(--font-geist-mono)",
+        logo: "var(--font-logo)",
+        inter: "var(--font-inter)",
+      },
     },
   },
   plugins: [],
